@@ -20,9 +20,17 @@ Total: 64 bytes
 import socket
 import struct
 
+ICMP_ECHO_REQUEST = 8
+
 
 def ping():
-    pass
+    dest = "www.google.com"
+    header = struct.pack("!BBHHH", ICMP_ECHO_REQUEST, 0, 5000, 999, 1)
+    data = b"\x00" * 56
+    packet = header + data
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
+    sock.sendto(packet, (dest, 1))
 
 
 if __name__ == "__main__":
