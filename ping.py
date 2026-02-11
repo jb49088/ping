@@ -51,7 +51,7 @@ def calculate_checksum(packet: bytes) -> int:
     return total
 
 
-def send_packet(sock: socket.socket, packet: bytes, destination: str):
+def send_packet(sock: socket.socket, packet: bytes, destination: str) -> None:
     sock.sendto(packet, (destination, 1))
 
 
