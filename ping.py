@@ -23,7 +23,7 @@ import struct
 ICMP_ECHO_REQUEST = 8
 
 
-def create_packet():
+def create_packet() -> bytes:
     """Create an ICMP ping request packet."""
     header = struct.pack("!BBHHH", ICMP_ECHO_REQUEST, 0, 0, 1, 1)
     data = b"\x00" * 56
@@ -33,7 +33,7 @@ def create_packet():
     return header + data
 
 
-def checksum(packet):
+def checksum(packet: bytes) -> int:
     """Calculate the 16-bit one's complement checksum of a packet."""
     total = 0
     # Sum 16 bit words
@@ -50,7 +50,7 @@ def checksum(packet):
     return total
 
 
-def ping():
+def ping() -> None:
     dest = "8.8.8.8"
     packet = create_packet()
     sock = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
