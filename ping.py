@@ -43,7 +43,7 @@ def checksum(packet):
 def ping():
     dest = "8.8.8.8"
     header = struct.pack("!BBHHH", ICMP_ECHO_REQUEST, 0, 0, 1, 1)
-    data = b"\x67" * 56
+    data = b"\x00" * 56
     packet = header + data
     chksum = checksum(packet)
     header = struct.pack("!BBHHH", ICMP_ECHO_REQUEST, 0, chksum, 1, 1)
