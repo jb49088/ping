@@ -51,6 +51,10 @@ def calculate_checksum(packet: bytes) -> int:
     return total
 
 
+def send_packet(sock: socket.socket, packet: bytes, destination: str):
+    sock.sendto(packet, (destination, 1))
+
+
 def ping() -> None:
     destination = "8.8.8.8"
 
@@ -65,9 +69,10 @@ def ping() -> None:
         print("\nICMP messages can only be sent from processess running as root.\n")
         sys.exit(1)
 
+    print(type(sock))
     packet = create_packet()
     print(f"\nPING {destination} ({host}) {len(packet)} bytes of data.\n")
-    sock.sendto(packet, (destination, 1))
+    send_packet(sock, packet, destination)
 
 
 if __name__ == "__main__":
