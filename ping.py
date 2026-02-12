@@ -17,7 +17,6 @@ Data: 56 bytes (POSIX default)
 Total: 64 bytes
 """
 
-import os
 import random
 import select
 import socket
