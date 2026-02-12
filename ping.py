@@ -18,6 +18,7 @@ Total: 64 bytes
 """
 
 import os
+import random
 import select
 import socket
 import struct
@@ -25,7 +26,7 @@ import sys
 import time
 
 TYPE = 8
-IDENTIFIER = os.getpid()
+IDENTIFIER = random.randint(0, 0xFFFF)
 
 DATA_LEN = 56
 
