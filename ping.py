@@ -66,7 +66,7 @@ def send_packet(sock: socket.socket, packet: bytes, destination: str) -> float:
 
 def receive_packet(
     sock: socket.socket, destination: str, time_sent: float, timeout: int
-) -> tuple[float | None, int | None]:
+) -> tuple[float | None, int | None, int | None]:
     """Receive packet from destination, check if packet belongs to us, then calculate round trip time."""
     time_left = timeout
     while True:
@@ -76,7 +76,7 @@ def receive_packet(
         time_left -= end_select
 
         if not ready[0]:  # Timeout
-            return None, None
+            return None, None, None
 
         time_recieved = time.perf_counter()
         packet, address = sock.recvfrom(1024)
@@ -86,10 +86,11 @@ def receive_packet(
 
         # Check if packet belongs to us
         if identifier == IDENTIFIER and address[0] == destination:
-            return time_recieved - time_sent, sequence
+            ttl = packet[8]
+            return time_recieved - time_sent, ttl, sequence
 
         if time_left <= 0:
-            return None, None
+            return None, None, None
 
 
 def ping() -> None:
@@ -113,12 +114,12 @@ def ping() -> None:
         while True:
             packet = create_packet(loop_sequence)
             time_sent = send_packet(sock, packet, destination)
-            rtt, sequence = receive_packet(sock, destination, time_sent, timeout)
+            rtt, ttl, sequence = receive_packet(sock, destination, time_sent, timeout)
             if rtt is None:
                 print(f"Request timeout for icmp_seq={sequence}")
             else:
                 print(
-                    f"{len(packet)} bytes from {host}: icmp_seq={sequence} ttl=foobar time={rtt * 1000:.2f} ms"
+                    f"{len(packet)} bytes from {host}: icmp_seq={sequence} ttl={ttl} time={rtt * 1000:.2f} ms"
                 )
             loop_sequence += 1
     except KeyboardInterrupt:
