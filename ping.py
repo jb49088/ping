@@ -17,19 +17,25 @@ Data: 56 bytes (POSIX default)
 Total: 64 bytes
 """
 
+import os
+import select
 import socket
 import struct
 import sys
+import time
 
-ICMP_ECHO_REQUEST = 8
+TYPE = 8
+IDENTIFIER = os.getpid()
+
+DATA_LEN = 56
 
 
 def create_packet() -> bytes:
     """Create an ICMP ping request packet."""
-    header = struct.pack("!BBHHH", ICMP_ECHO_REQUEST, 0, 0, 1, 1)
-    data = b"\x00" * 56
+    header = struct.pack("!BBHHH", TYPE, 0, 0, IDENTIFIER, 1)
+    data = b"\x00" * DATA_LEN
     chksum = calculate_checksum(header + data)
-    header = struct.pack("!BBHHH", ICMP_ECHO_REQUEST, 0, chksum, 1, 1)
+    header = struct.pack("!BBHHH", TYPE, 0, chksum, IDENTIFIER, 1)
 
     return header + data
 
@@ -51,12 +57,42 @@ def calculate_checksum(packet: bytes) -> int:
     return total
 
 
-def send_packet(sock: socket.socket, packet: bytes, destination: str) -> None:
+def send_packet(sock: socket.socket, packet: bytes, destination: str) -> float:
+    time_sent = time.perf_counter()
     sock.sendto(packet, (destination, 1))
+
+    return time_sent
+
+
+def receive_packet(
+    sock: socket.socket, destination: str, time_sent: float, timeout: int
+) -> float | None:
+    time_left = timeout
+    while True:
+        ready = select.select([sock], [], [], time_left)
+
+        if not ready[0]:  # Timeout
+            return
+
+        time_recieved = time.perf_counter()
+        packet, address = sock.recvfrom(1024)
+
+        header = packet[20:28]
+        _, _, _, identifier, sequence = struct.unpack("!BBHHH", header)
+
+        # Check if packet belongs to us
+        if identifier == IDENTIFIER and address[0] == destination:
+            return time_recieved - time_sent
+
+        time_left -= time_recieved
+
+        if time_left <= 0:
+            return
 
 
 def ping() -> None:
     destination = "8.8.8.8"
+    timeout = 1
 
     try:
         host = socket.gethostbyname(destination)
@@ -69,10 +105,14 @@ def ping() -> None:
         print("\nICMP messages can only be sent from processess running as root.\n")
         sys.exit(1)
 
-    print(type(sock))
     packet = create_packet()
-    print(f"\nPING {destination} ({host}) {len(packet)} bytes of data.\n")
-    send_packet(sock, packet, destination)
+    print(f"\nPING {destination} ({host}) {DATA_LEN} bytes of data.\n")
+    time_sent = send_packet(sock, packet, destination)
+    rtt = receive_packet(sock, destination, time_sent, timeout)
+    if rtt:
+        print(
+            f"{len(packet)} bytes from {host}: icmp_seq=1 ttl=foobar time={rtt * 1000:.2f} ms"
+        )
 
 
 if __name__ == "__main__":
