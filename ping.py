@@ -24,10 +24,10 @@ import struct
 import sys
 import time
 
+DATA_LEN = 56
+
 TYPE = 8
 IDENTIFIER = random.randint(0, 0xFFFF)
-
-DATA_LEN = 56
 
 
 def create_packet() -> bytes:
