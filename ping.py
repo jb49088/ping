@@ -109,7 +109,9 @@ def ping() -> None:
     print(f"\nPING {destination} ({host}) {DATA_LEN} bytes of data.\n")
     time_sent = send_packet(sock, packet, destination)
     rtt = receive_packet(sock, destination, time_sent, timeout)
-    if rtt:
+    if rtt is None:
+        print("Request timeout for icmp_seq=1")
+    else:
         print(
             f"{len(packet)} bytes from {host}: icmp_seq=1 ttl=foobar time={rtt * 1000:.2f} ms"
         )
