@@ -58,6 +58,7 @@ def calculate_checksum(packet: bytes) -> int:
 
 
 def send_packet(sock: socket.socket, packet: bytes, destination: str) -> float:
+    """Send packet to destination."""
     time_sent = time.perf_counter()
     sock.sendto(packet, (destination, 1))
 
@@ -67,6 +68,7 @@ def send_packet(sock: socket.socket, packet: bytes, destination: str) -> float:
 def receive_packet(
     sock: socket.socket, destination: str, time_sent: float, timeout: int
 ) -> float | None:
+    """Receive packet from destination, check if packet belongs to us, then calculate round trip time."""
     time_left = timeout
     while True:
         ready = select.select([sock], [], [], time_left)
@@ -106,15 +108,20 @@ def ping() -> None:
         sys.exit(1)
 
     packet = create_packet()
-    print(f"\nPING {destination} ({host}) {DATA_LEN} bytes of data.\n")
-    time_sent = send_packet(sock, packet, destination)
-    rtt = receive_packet(sock, destination, time_sent, timeout)
-    if rtt is None:
-        print("Request timeout for icmp_seq=1")
-    else:
-        print(
-            f"{len(packet)} bytes from {host}: icmp_seq=1 ttl=foobar time={rtt * 1000:.2f} ms"
-        )
+    print(f"\nPinging {destination} ({host}) with {DATA_LEN} bytes of data:\n")
+    try:
+        while True:
+            time_sent = send_packet(sock, packet, destination)
+            rtt = receive_packet(sock, destination, time_sent, timeout)
+            if rtt is None:
+                print("Request timeout for icmp_seq=1")
+            else:
+                print(
+                    f"{len(packet)} bytes from {host}: icmp_seq=1 ttl=foobar time={rtt * 1000:.2f} ms"
+                )
+    except KeyboardInterrupt:
+        print(f"\nPing statistics for {host}:\n")
+        sock.close()
 
 
 if __name__ == "__main__":
