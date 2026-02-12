@@ -125,7 +125,7 @@ def ping() -> None:
                 print(f"Request timeout for icmp_seq={loop_sequence}")
             else:
                 print(
-                    f"{len(packet)} bytes from {host}: icmp_seq={sequence} ttl={ttl} time={rtt * 1000:.2f} ms"
+                    f"{len(packet)} bytes from {destination} ({host}): icmp_seq={sequence} ttl={ttl} time={rtt * 1000:.2f} ms"
                 )
                 received += 1
             loop_sequence += 1
