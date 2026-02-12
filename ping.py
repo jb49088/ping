@@ -95,6 +95,7 @@ def receive_packet(
 
 def ping() -> None:
     destination = "8.8.8.8"
+    interval = 1
     timeout = 1
 
     try:
@@ -122,6 +123,7 @@ def ping() -> None:
                     f"{len(packet)} bytes from {host}: icmp_seq={sequence} ttl={ttl} time={rtt * 1000:.2f} ms"
                 )
             loop_sequence += 1
+            time.sleep(interval)
     except KeyboardInterrupt:
         print(f"\nPing statistics for {host}:\n")
         sock.close()
