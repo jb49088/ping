@@ -21,7 +21,6 @@ import random
 import select
 import socket
 import struct
-import sys
 import time
 
 DATA_LEN = 56
@@ -93,19 +92,19 @@ def receive_packet(
 
 
 def ping() -> None:
-    destination = "8.8.8.8"
+    destination = "8.8.8.88888888888"
     timeout = 1
 
     try:
         host = socket.gethostbyname(destination)
     except socket.gaierror:
         print("\nAddress resolution failed. Bad hostname.\n")
-        sys.exit(1)
+        return
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
     except PermissionError:
         print("\nICMP messages can only be sent from processess running as root.\n")
-        sys.exit(1)
+        return
 
     packet = create_packet()
     print(f"\nPinging {destination} ({host}) with {DATA_LEN} bytes of data:\n")
