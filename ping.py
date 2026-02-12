@@ -29,12 +29,12 @@ TYPE = 8
 IDENTIFIER = random.randint(0, 0xFFFF)
 
 
-def create_packet() -> bytes:
+def create_packet(sequence: int) -> bytes:
     """Create an ICMP ping request packet."""
-    header = struct.pack("!BBHHH", TYPE, 0, 0, IDENTIFIER, 1)
+    header = struct.pack("!BBHHH", TYPE, 0, 0, IDENTIFIER, sequence)
     data = b"\x00" * DATA_LEN
     chksum = calculate_checksum(header + data)
-    header = struct.pack("!BBHHH", TYPE, 0, chksum, IDENTIFIER, 1)
+    header = struct.pack("!BBHHH", TYPE, 0, chksum, IDENTIFIER, sequence)
 
     return header + data
 
@@ -66,14 +66,17 @@ def send_packet(sock: socket.socket, packet: bytes, destination: str) -> float:
 
 def receive_packet(
     sock: socket.socket, destination: str, time_sent: float, timeout: int
-) -> float | None:
+) -> tuple[float | None, int | None]:
     """Receive packet from destination, check if packet belongs to us, then calculate round trip time."""
     time_left = timeout
     while True:
+        start_select = time.perf_counter()
         ready = select.select([sock], [], [], time_left)
+        end_select = time.perf_counter() - start_select
+        time_left -= end_select
 
         if not ready[0]:  # Timeout
-            return
+            return None, None
 
         time_recieved = time.perf_counter()
         packet, address = sock.recvfrom(1024)
@@ -83,16 +86,14 @@ def receive_packet(
 
         # Check if packet belongs to us
         if identifier == IDENTIFIER and address[0] == destination:
-            return time_recieved - time_sent
-
-        time_left -= time_recieved
+            return time_recieved - time_sent, sequence
 
         if time_left <= 0:
-            return
+            return None, None
 
 
 def ping() -> None:
-    destination = "8.8.8.88888888888"
+    destination = "8.8.8.8"
     timeout = 1
 
     try:
@@ -106,21 +107,24 @@ def ping() -> None:
         print("\nICMP messages can only be sent from processess running as root.\n")
         return
 
-    packet = create_packet()
     print(f"\nPinging {destination} ({host}) with {DATA_LEN} bytes of data:\n")
     try:
+        loop_sequence = 1
         while True:
+            packet = create_packet(loop_sequence)
             time_sent = send_packet(sock, packet, destination)
-            rtt = receive_packet(sock, destination, time_sent, timeout)
+            rtt, sequence = receive_packet(sock, destination, time_sent, timeout)
             if rtt is None:
-                print("Request timeout for icmp_seq=1")
+                print(f"Request timeout for icmp_seq={sequence}")
             else:
                 print(
-                    f"{len(packet)} bytes from {host}: icmp_seq=1 ttl=foobar time={rtt * 1000:.2f} ms"
+                    f"{len(packet)} bytes from {host}: icmp_seq={sequence} ttl=foobar time={rtt * 1000:.2f} ms"
                 )
+            loop_sequence += 1
     except KeyboardInterrupt:
         print(f"\nPing statistics for {host}:\n")
         sock.close()
+        return
 
 
 if __name__ == "__main__":
