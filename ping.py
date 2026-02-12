@@ -110,22 +110,32 @@ def ping() -> None:
         return
 
     print(f"\nPinging {destination} ({host}) with {DATA_LEN} bytes of data:\n")
+
+    loop_sequence = 1
+    sent = 0
+    received = 0
+
     try:
-        loop_sequence = 1
         while True:
             packet = create_packet(loop_sequence)
             time_sent = send_packet(sock, packet, destination)
+            sent += 1
             rtt, ttl, sequence = receive_packet(sock, destination, time_sent, timeout)
             if rtt is None:
-                print(f"Request timeout for icmp_seq={sequence}")
+                print(f"Request timeout for icmp_seq={loop_sequence}")
             else:
                 print(
                     f"{len(packet)} bytes from {host}: icmp_seq={sequence} ttl={ttl} time={rtt * 1000:.2f} ms"
                 )
+                received += 1
             loop_sequence += 1
             time.sleep(interval)
     except KeyboardInterrupt:
         print(f"\nPing statistics for {host}:\n")
+        loss_pct = round(((sent - received) / sent) * 100) if sent > 0 else 0
+        print(
+            f"Packets: Sent = {sent}, Received = {received}, Lost = {sent - received} ({loss_pct}% lost)"
+        )
         sock.close()
         return
 
