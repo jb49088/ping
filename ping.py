@@ -34,7 +34,9 @@ def parse_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("host", help="Host to ping.")
-    parser.add_argument("-i", "--interval", help="Interval between pings.")
+    parser.add_argument(
+        "-i", "--interval", type=float, default=1.0, help="Interval between pings."
+    )
 
     args = parser.parse_args()
 
@@ -108,7 +110,7 @@ def receive_packet(
 def ping() -> None:
     args = parse_args()
     hostname = args.host
-    interval = float(args.interval) if args.interval else 1
+    interval = args.interval
 
     try:
         address = socket.gethostbyname(hostname)
