@@ -94,7 +94,7 @@ def receive_packet(
 
 
 def ping() -> None:
-    hostname = "www.youtube.com"
+    hostname = "8.8.8.8"
     interval = 1
     timeout = 1
 
@@ -109,7 +109,12 @@ def ping() -> None:
         print("\nICMP messages can only be sent from processess running as root.\n")
         return
 
-    print(f"\nPinging {hostname} ({address}) with {DATA_LEN} bytes of data:\n")
+    if hostname == address:
+        destination = address
+    else:
+        destination = f"{hostname} ({address})"
+
+    print(f"\nPinging {destination} with {DATA_LEN} bytes of data:\n")
 
     loop_sequence = 1
     sent = 0
@@ -125,13 +130,13 @@ def ping() -> None:
                 print(f"Request timeout for icmp_seq={loop_sequence}")
             else:
                 print(
-                    f"{len(packet)} bytes from {hostname} ({address}): icmp_seq={sequence} ttl={ttl} time={rtt * 1000:.2f} ms"
+                    f"{len(packet)} bytes from {destination}: icmp_seq={sequence} ttl={ttl} time={rtt * 1000:.2f} ms"
                 )
                 received += 1
             loop_sequence += 1
             time.sleep(interval)
     except KeyboardInterrupt:
-        print(f"\nPing statistics for {hostname} ({address}):")
+        print(f"\nPing statistics for {destination}:")
         loss_pct = round(((sent - received) / sent) * 100) if sent > 0 else 0
         print(
             f"\nPackets: Sent = {sent}, Received = {received}, Lost = {sent - received} ({loss_pct}% lost)\n"
