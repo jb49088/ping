@@ -1,4 +1,4 @@
-### Ping
+### ping
 
 Custom ping implementation using raw sockets. Crafts, sends, and receives ICMP Echo Request packets to and from network hosts.
 
@@ -13,9 +13,9 @@ Used to determine host availability and measure round-trip latency.
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Python                           1             38             23            107
-Markdown                         1             10              4             22
+Markdown                         1             12              4             22
 -------------------------------------------------------------------------------
-SUM:                             2             48             27            129
+SUM:                             2             50             27            129
 -------------------------------------------------------------------------------
 ```
 <!-- CODE_STATISTICS_END -->
