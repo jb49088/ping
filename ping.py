@@ -17,6 +17,7 @@ Data: 56 bytes (POSIX default)
 Total: 64 bytes
 """
 
+import argparse
 import random
 import select
 import socket
@@ -27,6 +28,17 @@ DATA_LEN = 56
 
 TYPE = 8
 IDENTIFIER = random.randint(0, 0xFFFF)
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("host", help="Host to ping.")
+    parser.add_argument("-i", "--interval", help="Interval between pings.")
+
+    args = parser.parse_args()
+
+    return args
 
 
 def create_packet(sequence: int) -> bytes:
@@ -94,9 +106,9 @@ def receive_packet(
 
 
 def ping() -> None:
-    hostname = "8.8.8.8"
-    interval = 1
-    timeout = 1
+    args = parse_args()
+    hostname = args.host
+    interval = float(args.interval) if args.interval else 1
 
     try:
         address = socket.gethostbyname(hostname)
@@ -123,7 +135,7 @@ def ping() -> None:
             packet = create_packet(loop_sequence)
             time_sent = send_packet(sock, packet, address)
             sent += 1
-            rtt, ttl, sequence = receive_packet(sock, time_sent, timeout)
+            rtt, ttl, sequence = receive_packet(sock, time_sent, 1)
             if rtt is None:
                 print(f"Request timeout for icmp_seq={loop_sequence}")
             else:
