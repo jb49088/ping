@@ -116,6 +116,7 @@ def ping() -> None:
     loop_sequence = 1
     sent = 0
     received = 0
+    rtts = []
 
     try:
         while True:
@@ -129,6 +130,7 @@ def ping() -> None:
                 print(
                     f"{len(packet)} bytes from {destination}: icmp_seq={sequence} ttl={ttl} time={rtt * 1000:.2f} ms"
                 )
+                rtts.append(rtt)
                 received += 1
             loop_sequence += 1
             time.sleep(interval)
@@ -136,7 +138,13 @@ def ping() -> None:
         print(f"\nPing statistics for {destination}:")
         loss_pct = round(((sent - received) / sent) * 100) if sent > 0 else 0
         print(
-            f"\nPackets: Sent = {sent}, Received = {received}, Lost = {sent - received} ({loss_pct}% lost)\n"
+            f"\nPackets: Sent = {sent}, Received = {received}, Lost = {sent - received} ({loss_pct}% lost)"
+        )
+        min_rtt = min(rtts) * 1000
+        max_rtt = max(rtts) * 1000
+        avg_rtt = (sum(rtts) / len(rtts)) * 1000
+        print(
+            f"Round trip times: Min: {min_rtt:.2f} ms Max: {max_rtt:.2f} ms Avg: {avg_rtt:.2f} ms\n"
         )
         sock.close()
         return
