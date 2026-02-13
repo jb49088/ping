@@ -32,3 +32,5 @@ ping
 <!-- PROJECT_STRUCTURE_END -->
 
 ### Screenshots
+
+<img width="1568" height="888" alt="Screenshot 2026-02-13 165701" src="https://github.com/user-attachments/assets/8d968973-8b58-4eaf-8427-255d416fb096" />
