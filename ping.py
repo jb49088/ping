@@ -131,10 +131,10 @@ def ping() -> None:
             loop_sequence += 1
             time.sleep(interval)
     except KeyboardInterrupt:
-        print(f"\nPing statistics for {hostname} ({address}):\n")
+        print(f"\nPing statistics for {hostname} ({address}):")
         loss_pct = round(((sent - received) / sent) * 100) if sent > 0 else 0
         print(
-            f"Packets: Sent = {sent}, Received = {received}, Lost = {sent - received} ({loss_pct}% lost)"
+            f"\nPackets: Sent = {sent}, Received = {received}, Lost = {sent - received} ({loss_pct}% lost)\n"
         )
         sock.close()
         return
