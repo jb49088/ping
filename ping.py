@@ -150,9 +150,9 @@ def ping() -> None:
             time.sleep(interval)
     except KeyboardInterrupt:
         print(f"\nPing statistics for {destination}:")
-        loss_pct = round(((sent - received) / sent) * 100) if sent > 0 else 0
+        loss_pct = ((sent - received) / sent) * 100 if sent > 0 else 0
         print(
-            f"\nPackets: Sent = {sent}, Received = {received}, Lost = {sent - received} ({loss_pct}% lost)"
+            f"\nPackets: Sent = {sent}, Received = {received}, Lost = {sent - received} ({loss_pct:.2f}% lost)"
         )
         min_rtt = min(rtts) * 1000
         max_rtt = max(rtts) * 1000
