@@ -109,10 +109,7 @@ def ping() -> None:
         print("\nICMP messages can only be sent from processess running as root.\n")
         return
 
-    if hostname == address:
-        destination = address
-    else:
-        destination = f"{hostname} ({address})"
+    destination = address if address == hostname else f"{hostname} ({address})"
 
     print(f"\nPinging {destination} with {DATA_LEN} bytes of data:\n")
 
