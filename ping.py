@@ -81,7 +81,7 @@ def send_packet(sock: socket.socket, packet: bytes, destination: str) -> float:
 def receive_packet(
     sock: socket.socket, time_sent: float, timeout: int
 ) -> tuple[float | None, int | None, int | None]:
-    """Receive packet from destination, check if packet belongs to us, then calculate round trip time."""
+    """Receive packet from destination."""
     time_left = timeout
     while True:
         start_select = time.perf_counter()

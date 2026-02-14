@@ -11,9 +11,9 @@ Custom ping implementation using raw sockets. Crafts, sends, and receives ICMP E
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Python                           1             38             23            107
-Markdown                         1             11              4             21
+Markdown                         1             10              4             22
 -------------------------------------------------------------------------------
-SUM:                             2             49             27            128
+SUM:                             2             48             27            129
 -------------------------------------------------------------------------------
 ```
 <!-- CODE_STATISTICS_END -->
