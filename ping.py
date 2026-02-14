@@ -115,7 +115,7 @@ def ping() -> None:
     try:
         address = socket.gethostbyname(hostname)
     except socket.gaierror:
-        print("\nAddress resolution failed. Bad hostname.\n")
+        print("\nAddress resolution failed.\n")
         return
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
