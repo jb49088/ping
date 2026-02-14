@@ -4,7 +4,7 @@
 
 """
 ICMP Echo Request/Reply Packet Structure
------------------------------------------
+----------------------------------------
 Header: 8 bytes
   Type:       1 byte
   Code:       1 byte
