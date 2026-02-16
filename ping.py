@@ -62,7 +62,8 @@ def calculate_checksum(packet: bytes) -> int:
         total += word
 
     # Add carry to right side
-    total = (total >> 16) + (total & 0xFFFF)
+    while total >> 16:
+        total = (total >> 16) + (total & 0xFFFF)
 
     # Perform one's complement
     total = ~total & 0xFFFF
