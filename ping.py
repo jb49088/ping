@@ -47,8 +47,8 @@ def create_packet(sequence: int) -> bytes:
     """Create an ICMP ping request packet."""
     header = struct.pack("!BBHHH", TYPE, 0, 0, IDENTIFIER, sequence)
     data = b"\x00" * DATA_LEN
-    chksum = calculate_checksum(header + data)
-    header = struct.pack("!BBHHH", TYPE, 0, chksum, IDENTIFIER, sequence)
+    checksum = calculate_checksum(header + data)
+    header = struct.pack("!BBHHH", TYPE, 0, checksum, IDENTIFIER, sequence)
 
     return header + data
 
