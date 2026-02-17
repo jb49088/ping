@@ -96,16 +96,22 @@ def receive_packet(
         time_recieved = time.perf_counter()
         packet, _ = sock.recvfrom(1024)
 
-        icmp_header = struct.unpack("!BBHHH", packet[20:28])
-        identifier, sequence = icmp_header[3:5]
+        identifier, sequence, ttl = parse_packet(packet)
 
         # Check if packet belongs to us
         if identifier == IDENTIFIER:
-            ttl = packet[8]
             return time_recieved - time_sent, ttl, sequence
 
         if time_left <= 0:
             return None, None, None
+
+
+def parse_packet(packet: bytes) -> tuple[int, int, int]:
+    icmp_header = struct.unpack("!BBHHH", packet[20:28])
+    identifier, sequence = icmp_header[3:5]
+    ttl = packet[8]
+
+    return identifier, sequence, ttl
 
 
 def ping() -> None:
