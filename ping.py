@@ -96,8 +96,8 @@ def receive_packet(
         time_recieved = time.perf_counter()
         packet, _ = sock.recvfrom(1024)
 
-        header = packet[20:28]
-        _, _, _, identifier, sequence = struct.unpack("!BBHHH", header)
+        icmp_header = struct.unpack("!BBHHH", packet[20:28])
+        identifier, sequence = icmp_header[3:5]
 
         # Check if packet belongs to us
         if identifier == IDENTIFIER:
