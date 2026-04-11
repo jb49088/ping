@@ -12,8 +12,9 @@ Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Python                           1             41             23            111
 Markdown                         1             10              4             22
+Text                             1              0              0             17
 -------------------------------------------------------------------------------
-SUM:                             2             51             27            133
+SUM:                             3             51             27            150
 -------------------------------------------------------------------------------
 ```
 <!-- CODE_STATISTICS_END -->
@@ -25,9 +26,10 @@ SUM:                             2             51             27            133
 ```
 ping
 ├── ping.py
-└── README.md
+├── README.md
+└── requirements.txt
 
-1 directory, 2 files
+1 directory, 3 files
 ```
 <!-- PROJECT_STRUCTURE_END -->
 
